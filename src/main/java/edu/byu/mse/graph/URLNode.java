@@ -1,6 +1,6 @@
 package edu.byu.mse.graph;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class URLNode<String> implements Node {
@@ -13,6 +13,7 @@ public class URLNode<String> implements Node {
     public URLNode(String url, String changeFreq) {
         this.value = url;
         this.changeFreq = changeFreq;
+        this.children = new ArrayList<>();
     }
 
     @Override
@@ -38,5 +39,9 @@ public class URLNode<String> implements Node {
     @Override
     public String getValue() {
         return value;
+    }
+
+    public String getChangeFreq() {
+        return changeFreq;
     }
 }

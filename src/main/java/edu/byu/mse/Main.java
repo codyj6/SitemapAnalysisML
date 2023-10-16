@@ -2,10 +2,8 @@ package edu.byu.mse;
 
 import edu.byu.mse.downloader.SitemapDownloader;
 import edu.byu.mse.exception.EntityImportException;
-import edu.byu.mse.graph.GraphMaker;
+import edu.byu.mse.graph.XMLGraphMaker;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -45,7 +43,7 @@ public class Main {
         doc.getDocumentElement().normalize();
         NodeList nList = doc.getElementsByTagName("url");
 
-        GraphMaker maker = new GraphMaker(nList);
+        XMLGraphMaker maker = new XMLGraphMaker(nList);
 
         try {
             maker.importObjects();
