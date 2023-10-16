@@ -41,7 +41,18 @@ public class URLNode<String> implements Node {
         return value;
     }
 
-    public String getChangeFreq() {
+    @Override
+    public void setValue(Object value) {
+        this.value = (String) value;
+    }
+
+    @Override
+    public Object getSecondaryData() {
         return changeFreq;
+    }
+
+    @Override
+    public void setSecondaryData(Object data) {
+        changeFreq = (String) data;
     }
 }

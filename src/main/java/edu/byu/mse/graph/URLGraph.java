@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class URLGraph implements GraphStructure<URLNode> {
+public class URLGraph implements GraphStructure<Node> {
 
     private Node head;
 
@@ -21,6 +21,8 @@ public class URLGraph implements GraphStructure<URLNode> {
     public URLGraph(Node head) {
         this.head = head;
     }
+
+    public Node getHead() { return head; }
 
     @Override
     public void importObjects() throws EntityImportException {
@@ -40,8 +42,8 @@ public class URLGraph implements GraphStructure<URLNode> {
     }
 
     @Override
-    public List<URLNode> readObjects() {
-        List<URLNode> urls = new ArrayList<>();
+    public List<Node> readObjects() {
+        List<Node> urls = new ArrayList<>();
 
         if(head == null)
             return urls;
@@ -50,9 +52,9 @@ public class URLGraph implements GraphStructure<URLNode> {
         queue.add(head);
 
         while(!queue.isEmpty()) {
-            URLNode node = (URLNode) queue.poll();
+            Node node = (Node) queue.poll();
 
-            if(node.getChangeFreq() != null) {
+            if(node.getSecondaryData() != null) {
                 urls.add(node);
                 queue.addAll(node.getChildren());
             } else {
@@ -98,8 +100,23 @@ public class URLGraph implements GraphStructure<URLNode> {
 
                     recursiveInsert(new_sub_node, newNode, path, index + 1);
                 } else {
-                    newNode.setParent(parent);
-                    parent.addChildren(newNode);
+                    //check if already exists
+                    boolean exists = false;
+                    if(parent.getChildren().size() > 0) {
+
+                        for(Node child : (List<Node>) parent.getChildren()) {
+
+                            if(child.getValue().equals(path[index])) {
+                                exists = true;
+                                child.setSecondaryData(newNode.getSecondaryData());
+                            }
+                        }
+                    }
+
+                    if(!exists) {
+                        newNode.setParent(parent);
+                        parent.addChildren(newNode);
+                    }
                 }
             }
 
@@ -132,6 +149,9 @@ public class URLGraph implements GraphStructure<URLNode> {
         String changeFreq = elem.getElementsByTagName("changefreq").item(0).getTextContent();
 
         String url_cleaned = url.replace("https://education.byu.edu/", "");
+
+        if(url_cleaned.equals(""))
+            url_cleaned = "root";
 
         return new URLNode(url_cleaned, changeFreq);
     }

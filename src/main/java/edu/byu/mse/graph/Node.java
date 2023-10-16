@@ -8,4 +8,7 @@ public interface Node<T> {
     void setParent(Node node);
     void addChildren(Node node);
     T getValue();
+    void setValue(T t);
+    T getSecondaryData();
+    void setSecondaryData(T t);
 }
