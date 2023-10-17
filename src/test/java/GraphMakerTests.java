@@ -20,12 +20,17 @@ public class GraphMakerTests {
     private URLNode child;
     @BeforeAll
     void setup() {
-        head = new URLNode("root", "daily");
+        head = new URLNode("root");
+        head.getNodeData().getData().put("changefreq", "daily");
 
-        URLNode child1 = new URLNode("advisement", "daily");
-        URLNode child2 = new URLNode("deans", "weekly");
-        URLNode child3 = new URLNode("employee_portal", "weekly");
-        URLNode child2_5 = new URLNode("deans/financial-aid", "weekly");
+        URLNode child1 = new URLNode("advisement");
+        child1.getNodeData().getData().put("changefreq", "weekly");
+        URLNode child2 = new URLNode("deans");
+        child2.getNodeData().getData().put("changefreq", "weekly");
+        URLNode child3 = new URLNode("employee_portal");
+        child3.getNodeData().getData().put("changefreq", "monthly");
+        URLNode child2_5 = new URLNode("deans/financial-aid");
+        child2_5.getNodeData().getData().put("changefreq", "yearly");
         child2_5.setParent(child2);
         child2.addChildren(child2_5);
 

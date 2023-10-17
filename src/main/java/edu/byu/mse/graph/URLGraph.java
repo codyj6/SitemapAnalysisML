@@ -3,16 +3,13 @@ package edu.byu.mse.graph;
 import edu.byu.mse.exception.EntityImportException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+
+import java.util.*;
 
 public class URLGraph implements GraphStructure<Node> {
 
     private Node head;
-
-    public NodeList nodeList;
+    private NodeList nodeList;
 
     public URLGraph(NodeList list) {
         this.nodeList = list;
@@ -54,7 +51,7 @@ public class URLGraph implements GraphStructure<Node> {
         while(!queue.isEmpty()) {
             Node node = (Node) queue.poll();
 
-            if(node.getSecondaryData() != null) {
+            if(node.getNodeData().getData().size() > 0) {
                 urls.add(node);
                 queue.addAll(node.getChildren());
             } else {
@@ -74,6 +71,10 @@ public class URLGraph implements GraphStructure<Node> {
 
     private void recursiveInsert(Node parent, Node newNode, String[] path, int index) {
 
+        /**
+         * If the parent node has children then find among those children if its path is shared.
+         * If so then traverse into that child, until destination is found.
+         */
         if(parent.getChildren().size() > 0) {
 
             Node nextChild = null;
@@ -93,7 +94,7 @@ public class URLGraph implements GraphStructure<Node> {
             } else {
 
                 if(index < path.length - 1) {
-                    Node new_sub_node = new URLNode(path[index], null);
+                    Node new_sub_node = new URLNode(path[index]);
 
                     new_sub_node.setParent(parent);
                     parent.addChildren(new_sub_node);
@@ -108,7 +109,7 @@ public class URLGraph implements GraphStructure<Node> {
 
                             if(child.getValue().equals(path[index])) {
                                 exists = true;
-                                child.setSecondaryData(newNode.getSecondaryData());
+                                child.setNodeData(newNode.getNodeData());
                             }
                         }
                     }
@@ -123,7 +124,7 @@ public class URLGraph implements GraphStructure<Node> {
         } else {
 
             if(index < path.length - 1) {
-                Node new_sub_node = new URLNode(path[index], null);
+                Node new_sub_node = new URLNode(path[index]);
 
                 new_sub_node.setParent(parent);
                 parent.addChildren(new_sub_node);
@@ -153,6 +154,9 @@ public class URLGraph implements GraphStructure<Node> {
         if(url_cleaned.equals(""))
             url_cleaned = "root";
 
-        return new URLNode(url_cleaned, changeFreq);
+        Node url_node = new URLNode(url_cleaned);
+        url_node.getNodeData().getData().put("changefreq", changeFreq);
+
+        return url_node;
     }
 }

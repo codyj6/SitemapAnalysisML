@@ -6,13 +6,13 @@ import java.util.List;
 public class URLNode<String> implements Node {
 
     private String value;
-    private String changeFreq;
+    private NodeData data;
     private Node parent;
     private List<Node> children;
 
-    public URLNode(String url, String changeFreq) {
+    public URLNode(String url) {
         this.value = url;
-        this.changeFreq = changeFreq;
+        this.data = new URLData();
         this.children = new ArrayList<>();
     }
 
@@ -47,12 +47,13 @@ public class URLNode<String> implements Node {
     }
 
     @Override
-    public Object getSecondaryData() {
-        return changeFreq;
+    public NodeData getNodeData() {
+        return data;
     }
 
     @Override
-    public void setSecondaryData(Object data) {
-        changeFreq = (String) data;
+    public void setNodeData(NodeData data) {
+        this.data = data;
     }
+
 }
