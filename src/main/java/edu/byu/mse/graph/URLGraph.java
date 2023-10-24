@@ -1,19 +1,16 @@
 package edu.byu.mse.graph;
 
 import edu.byu.mse.exception.EntityImportException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import java.util.*;
 
 public class URLGraph implements GraphStructure<Node> {
 
     private Node head;
-    private NodeList nodeList;
+    private String[] headers;
 
-    public URLGraph(NodeList list) {
-        this.nodeList = list;
-    }
+    private final int PRIMARY_INDEX = 0;
+
+    public URLGraph() { }
 
     public URLGraph(Node head) {
         this.head = head;
@@ -21,20 +18,18 @@ public class URLGraph implements GraphStructure<Node> {
 
     public Node getHead() { return head; }
 
+    public void setHeaders(String[] arr) { this.headers = arr; }
+
     @Override
-    public void importObjects() throws EntityImportException {
+    public void importObject(String[] arr) throws EntityImportException {
 
-        for(int i = 0; i < nodeList.getLength(); i++) {
-            org.w3c.dom.Node node = nodeList.item(i);
+        if(headers == null)
+            throw new EntityImportException("Headers have not been set");
 
-            if(node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-
-                if(i == 0) {
-                    head = createNode(node);
-                } else {
-                    insertIntoTree(head, createNode(node));
-                }
-            }
+        if(head == null) {
+            head = createNode(arr);
+        } else {
+            insertIntoTree(head, createNode(arr));
         }
     }
 
@@ -137,17 +132,12 @@ public class URLGraph implements GraphStructure<Node> {
         }
     }
 
-    private Node createNode(org.w3c.dom.Node node) throws EntityImportException {
-        Element elem = (Element) node;
+    private Node createNode(String[] arr) throws EntityImportException {
 
-        if(elem.getElementsByTagName("loc") == null || elem.getElementsByTagName("loc").getLength() == 0)
-            throw new EntityImportException("Loc is null or empty");
+        if(arr.length != headers.length)
+            throw new EntityImportException("Row contents do not match number of column headers");
 
-        if(elem.getElementsByTagName("changefreq") == null || elem.getElementsByTagName("changefreq").getLength() == 0)
-            throw new EntityImportException("Changefreq is null or empty");
-
-        String url = elem.getElementsByTagName("loc").item(0).getTextContent();
-        String changeFreq = elem.getElementsByTagName("changefreq").item(0).getTextContent();
+        String url = arr[PRIMARY_INDEX];
 
         String url_cleaned = url.replace("https://education.byu.edu/", "");
 
@@ -155,7 +145,9 @@ public class URLGraph implements GraphStructure<Node> {
             url_cleaned = "root";
 
         Node url_node = new URLNode(url_cleaned);
-        url_node.getNodeData().getData().put("changefreq", changeFreq);
+
+        for(int i = 0; i < headers.length; i++)
+            url_node.getNodeData().getData().put(headers[i], arr[i]);
 
         return url_node;
     }

@@ -81,12 +81,23 @@ public class GraphMakerTests {
     @DisplayName("Test importObject function")
     @Tag("GraphMaker")
     void testImportObjects() {
-        NodeList nList = getMockedNodeList();
+        String[] headers = {"loc", "param1", "param2"};
+        String[][] values = {
+                {"https://education.byu.edu/", "hello1", "world1"},
+                {"https://education.byu.edu/deans/financial-aid", "hello", "world"},
+                {"https://education.byu.edu/employee_portal", "hello2", "world2"},
+                {"https://education.byu.edu/deans", "hello3", "world3"},
+                {"https://education.byu.edu/advisement", "hello4", "world4"},
+                {"https://education.byu.edu/advisement/overview/directory", "hello5", "world5"},
+        };
 
-        graph = new URLGraph(nList);
+        graph = new URLGraph();
+
+        graph.setHeaders(headers);
 
         assertDoesNotThrow(() -> {
-            graph.importObjects();
+            for(String[] arr : values)
+                graph.importObject(arr);
         });
 
         List<Node> nodes = graph.readObjects();
@@ -106,12 +117,20 @@ public class GraphMakerTests {
     @DisplayName("Test importObject function but delayed parent insert")
     @Tag("GraphMaker")
     void testImportObjectsParentDelayed() {
-        NodeList nList = getMockedNodeList2();
+        String[] headers = {"loc", "param1", "param2"};
+        String[][] values = {
+                {"https://education.byu.edu/", "hello1", "world1"},
+                {"https://education.byu.edu/advisement/overview", "hello", "world"},
+                {"https://education.byu.edu/advisement", "hello2", "world2"}
+        };
 
-        graph = new URLGraph(nList);
+        graph = new URLGraph();
+
+        graph.setHeaders(headers);
 
         assertDoesNotThrow(() -> {
-            graph.importObjects();
+            for(String[] arr : values)
+                graph.importObject(arr);
         });
 
         List<Node> nodes = graph.readObjects();
@@ -132,122 +151,5 @@ public class GraphMakerTests {
                 return true;
 
         return false;
-    }
-
-    private NodeList getMockedNodeList2() {
-        NodeList nList = mock(NodeList.class);
-        Element elem1 = mock(Element.class);
-        Element elem2 = mock(Element.class);
-        Element elem3 = mock(Element.class);
-
-        Mockito.when(elem1.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem2.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem3.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-
-        NodeList elem1Loc = mockNodeList("https://education.byu.edu/");
-        NodeList elem1Change = mockNodeList("daily");
-
-        Mockito.when(elem1.getElementsByTagName("loc")).thenReturn(elem1Loc);
-        Mockito.when(elem1.getElementsByTagName("changefreq")).thenReturn(elem1Change);
-
-        NodeList elem2Loc = mockNodeList("https://education.byu.edu/advisement/overview");
-        NodeList elem2Change = mockNodeList("daily");
-
-        Mockito.when(elem2.getElementsByTagName("loc")).thenReturn(elem2Loc);
-        Mockito.when(elem2.getElementsByTagName("changefreq")).thenReturn(elem2Change);
-
-        NodeList elem3Loc = mockNodeList("https://education.byu.edu/advisement");
-        NodeList elem3Change = mockNodeList("weekly");
-
-        Mockito.when(elem3.getElementsByTagName("loc")).thenReturn(elem3Loc);
-        Mockito.when(elem3.getElementsByTagName("changefreq")).thenReturn(elem3Change);
-
-        Mockito.when(nList.getLength()).thenReturn(3);
-        Mockito.when(nList.item(0)).thenReturn(elem1);
-        Mockito.when(nList.item(1)).thenReturn(elem2);
-        Mockito.when(nList.item(2)).thenReturn(elem3);
-
-        return nList;
-    }
-
-    private NodeList getMockedNodeList() {
-        NodeList nList = mock(NodeList.class);
-        Element elem1 = mock(Element.class);
-        Element elem2 = mock(Element.class);
-        Element elem3 = mock(Element.class);
-        Element elem4 = mock(Element.class);
-        Element elem5 = mock(Element.class);
-        Element elem6 = mock(Element.class);
-
-        Mockito.when(elem1.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem2.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem3.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem4.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem5.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-        Mockito.when(elem6.getNodeType()).thenReturn(org.w3c.dom.Node.ELEMENT_NODE);
-
-        NodeList elem1Loc = mockNodeList("https://education.byu.edu/");
-        NodeList elem1Change = mockNodeList("daily");
-
-        Mockito.when(elem1.getElementsByTagName("loc")).thenReturn(elem1Loc);
-        Mockito.when(elem1.getElementsByTagName("changefreq")).thenReturn(elem1Change);
-
-        NodeList elem2Loc = mockNodeList("https://education.byu.edu/advisement");
-        NodeList elem2Change = mockNodeList("daily");
-
-        Mockito.when(elem2.getElementsByTagName("loc")).thenReturn(elem2Loc);
-        Mockito.when(elem2.getElementsByTagName("changefreq")).thenReturn(elem2Change);
-
-        NodeList elem3Loc = mockNodeList("https://education.byu.edu/deans");
-        NodeList elem3Change = mockNodeList("weekly");
-
-        Mockito.when(elem3.getElementsByTagName("loc")).thenReturn(elem3Loc);
-        Mockito.when(elem3.getElementsByTagName("changefreq")).thenReturn(elem3Change);
-
-        NodeList elem4Loc = mockNodeList("https://education.byu.edu/employee_portal");
-        NodeList elem4Change = mockNodeList("weekly");
-
-        Mockito.when(elem4.getElementsByTagName("loc")).thenReturn(elem4Loc);
-        Mockito.when(elem4.getElementsByTagName("changefreq")).thenReturn(elem4Change);
-
-        NodeList elem5Loc = mockNodeList("https://education.byu.edu/deans/financial-aid");
-        NodeList elem5Change = mockNodeList("weekly");
-
-        Mockito.when(elem5.getElementsByTagName("loc")).thenReturn(elem5Loc);
-        Mockito.when(elem5.getElementsByTagName("changefreq")).thenReturn(elem5Change);
-
-        NodeList elem6Loc = mockNodeList("https://education.byu.edu/advisement/overview/directory");
-        NodeList elem6Change = mockNodeList("monthly");
-
-        Mockito.when(elem6.getElementsByTagName("loc")).thenReturn(elem6Loc);
-        Mockito.when(elem6.getElementsByTagName("changefreq")).thenReturn(elem6Change);
-
-        Mockito.when(nList.getLength()).thenReturn(6);
-        Mockito.when(nList.item(0)).thenReturn(elem1);
-        Mockito.when(nList.item(1)).thenReturn(elem2);
-        Mockito.when(nList.item(2)).thenReturn(elem3);
-        Mockito.when(nList.item(3)).thenReturn(elem4);
-        Mockito.when(nList.item(4)).thenReturn(elem5);
-        Mockito.when(nList.item(5)).thenReturn(elem6);
-
-        return nList;
-    }
-
-    private NodeList mockNodeList(String value) {
-        NodeList list = mock(NodeList.class);
-        org.w3c.dom.Node node = mockNode(value);
-
-        Mockito.when(list.getLength()).thenReturn(1);
-        Mockito.when(list.item(0)).thenReturn(node);
-
-        return list;
-    }
-
-    private org.w3c.dom.Node mockNode(String value) {
-        org.w3c.dom.Node mockNode = mock(org.w3c.dom.Node.class);
-
-        Mockito.when(mockNode.getTextContent()).thenReturn(value);
-
-        return mockNode;
     }
 }

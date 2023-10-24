@@ -17,7 +17,7 @@ import java.security.cert.X509Certificate;
 
 public class SitemapDownloader {
 
-    private final String sitemapLocation = "https://education.byu.edu/sitemap.xml";
+    private final String sitemapLocation = "https://education.byu.edu/site-data.csv";
 
     private URL getSitemapUrl() throws MalformedURLException {
         return new URL(sitemapLocation);
@@ -48,7 +48,7 @@ public class SitemapDownloader {
         if (status >= 200 && status < 400) {
 
             InputStream in = conn.getInputStream();
-            FileOutputStream out = new FileOutputStream("sitemap.xml");
+            FileOutputStream out = new FileOutputStream("site-data.csv");
 
             byte[] buffer = new byte[4096];
             int bytesRead = -1;

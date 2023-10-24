@@ -2,16 +2,8 @@ package edu.byu.mse;
 
 import edu.byu.mse.downloader.SitemapDownloader;
 import edu.byu.mse.exception.EntityImportException;
-import edu.byu.mse.graph.XMLGraphMaker;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
+import edu.byu.mse.graph.URLGraph;
+import java.io.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -27,26 +19,29 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        File file = new File("sitemap.xml");
+        URLGraph graph = new URLGraph();
 
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newDefaultInstance();
-        Document doc = null;
+        BufferedReader reader = null;
 
         try {
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            reader = new BufferedReader(new FileReader("site-data.csv"));
 
-            doc = docBuilder.parse(file);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+            String line = "";
+            boolean read_headers = false;
+            while((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+
+                if(read_headers)
+                    graph.importObject(values);
+                else {
+                    read_headers = true;
+                    graph.setHeaders(values);
+                }
+            }
+
+            reader.close();
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-
-        doc.getDocumentElement().normalize();
-        NodeList nList = doc.getElementsByTagName("url");
-
-        XMLGraphMaker maker = new XMLGraphMaker(nList);
-
-        try {
-            maker.importObjects();
         } catch (EntityImportException e) {
             throw new RuntimeException(e);
         }
